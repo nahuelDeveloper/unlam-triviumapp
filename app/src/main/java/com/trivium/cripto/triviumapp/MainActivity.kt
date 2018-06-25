@@ -16,6 +16,12 @@ import android.widget.Button
 import android.widget.ImageView
 import java.io.InputStream
 
+/* Logica basada en los siguientes links:
+
+   - http://learn2codex.com/2017/12/29/select-image-from-gallery-and-display-in-imageview-android/
+   - https://github.com/dictav/AndroidSample-kotlin/blob/master/AndroidSample/src/main/kotlin/com/dictav/androidsample/PickphotoActivity.kt
+   
+   */
 class MainActivity : AppCompatActivity() {
 
     private val RESULT = 1
