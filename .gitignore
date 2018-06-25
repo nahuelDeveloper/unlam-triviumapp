@@ -8,3 +8,15 @@
 /build
 /captures
 .externalNativeBuild
+gradle.properties
+gradlew
+gradlew.bat
+settings.gradle
+.idea/gradle.xml
+.idea/misc.xml
+.idea/runConfigurations.xml
+.idea/vcs.xml
+.idea/caches/build_file_checksums.ser
+.idea/codeStyles/Project.xml
+gradle/wrapper/gradle-wrapper.jar
+gradle/wrapper/gradle-wrapper.properties
