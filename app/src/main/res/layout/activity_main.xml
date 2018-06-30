@@ -27,4 +27,13 @@
         android:layout_gravity="center"
         android:visibility="invisible" />
 
+    <Button
+        android:id="@+id/btnDecryptImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:text="Desencriptar imagen"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
+
 </LinearLayout>

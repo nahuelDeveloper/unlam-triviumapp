@@ -18,6 +18,12 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import java.io.InputStream
+import java.util.*
+import android.support.v4.app.NotificationCompat.getExtras
+import java.io.ByteArrayOutputStream
+import android.R.attr.bitmap
+import java.nio.ByteBuffer
+
 
 /* Logica basada en los siguientes links:
 
@@ -34,6 +40,10 @@ class MainActivity : AppCompatActivity() {
 
     var btnPickImage: Button? = null
     var ivGallery: ImageView? = null
+
+    var selectedImage: Bitmap? = null
+
+    var isEncrypted: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -116,14 +126,69 @@ class MainActivity : AppCompatActivity() {
 
         val mat : Matrix? = Matrix()
         mat?.postRotate(orientation)
-        return Bitmap.createBitmap(img as Bitmap, 0, 0, img?.getWidth() as Int,
-                img?.getHeight() as Int, mat, true)
+
+        val image = Bitmap.createBitmap(
+                img as Bitmap,
+                0,
+                0,
+                img?.getWidth() as Int,
+                img?.getHeight() as Int,
+                mat,
+                true
+        )
+
+        selectedImage = image
+
+        return image
     }
 
     // Encriptacion de la imagen seleccionada.
     fun encrypt() {
         Log.i(TAG, "Encriptar imagen")
 
-        // val triviumImageEncrypter = TriviumImageEncrypter() // Ver bien que pasarle en 'key' y 'iv'.
+        // Generamos los parametros Random iv y key
+        val iv = ByteArray(80)
+        Random().nextBytes(iv)
+        val key = ByteArray(10)
+        Random().nextBytes(key)
+
+        // Inicializamos el encriptador de Trivium
+        val triviumImageEncrypter = TriviumImageEncrypter(key, iv)
+
+        // Obtenemos un byte array a partir de la imagen seleccionada
+        val bmp = selectedImage
+        val stream = ByteArrayOutputStream()
+        bmp!!.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        val byteArray = stream.toByteArray()
+        bmp.recycle()
+
+        // Generamos la imagen para encriptar
+        val imageLoader = ImageLoader()
+        val bytesHeader = imageLoader.getBytesHeader(byteArray)
+        val bytesBody = imageLoader.getBytesBody(byteArray)
+        val image = Image(byteArray, bytesHeader, bytesBody)
+
+        // Obtenemos la imagen encriptada en forma de bytes
+        val encryptedBytes = triviumImageEncrypter.encrypt(image)
+
+        // Convertimos los bytes en imagen
+
+        val width = selectedImage!!.getWidth() / 2
+        val height = selectedImage!!.getHeight() / 2
+        val newBmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+        val buffer = ByteBuffer.wrap(encryptedBytes)
+
+        val bitmapSize = newBmp.getByteCount()
+        val bufferCapacity = buffer.capacity()
+
+        Log.i("", "Bitmap size = " + bitmapSize);
+        Log.i("", "Buffer size = " + bufferCapacity);
+
+        buffer.rewind()
+
+        newBmp.copyPixelsFromBuffer(buffer)
+
+        // Seteamos la imagen encriptada
+        (findViewById(R.id.ivGallery) as ImageView).setImageBitmap(newBmp)
     }
 }
