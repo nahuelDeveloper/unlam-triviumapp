@@ -18,4 +18,13 @@
         android:text="Elegir imagen"
         android:layout_gravity="center" />
 
+    <Button
+        android:id="@+id/btnEncryptImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:text="Encriptar imagen"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
+
 </LinearLayout>
