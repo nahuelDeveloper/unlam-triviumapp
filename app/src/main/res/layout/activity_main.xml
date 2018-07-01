@@ -3,6 +3,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
+
     <ImageView
         android:id="@+id/ivGallery"
         android:layout_width="fill_parent"
@@ -34,6 +35,6 @@
         android:layout_weight="0"
         android:text="Desencriptar imagen"
         android:layout_gravity="center"
-        android:visibility="invisible" />
+        android:visibility="visible" />
 
 </LinearLayout>
