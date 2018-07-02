@@ -4,6 +4,17 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:digits="0123456789"
+        android:inputType="number"
+        android:text="1160398827"
+        android:hint="Ingrese la clave de 10 digitos"
+        android:maxLength="10"
+        />
+
     <ImageView
         android:id="@+id/ivGallery"
         android:layout_width="fill_parent"
@@ -26,7 +37,7 @@
         android:layout_weight="0"
         android:text="Encriptar imagen"
         android:layout_gravity="center"
-        android:visibility="invisible" />
+        android:visibility="visible" />
 
     <Button
         android:id="@+id/btnDecryptImage"
