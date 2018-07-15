@@ -1,14 +1,13 @@
 package com.trivium.cripto.triviumapp
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.*
 import android.graphics.BitmapFactory.Options
-import android.graphics.Matrix
 import android.graphics.drawable.Drawable
 import android.media.ExifInterface
 import android.net.Uri
@@ -32,7 +31,7 @@ import java.nio.file.Paths
 import java.util.*
 
 
-/* Logica basada en los siguientes links:
+/* Información útil:
 
    - http://learn2codex.com/2017/12/29/select-image-from-gallery-and-display-in-imageview-android/
    - https://github.com/dictav/AndroidSample-kotlin/blob/master/AndroidSample/src/main/kotlin/com/dictav/androidsample/PickphotoActivity.kt
@@ -50,11 +49,13 @@ class MainActivity : AppCompatActivity() {
 
     var originalImage: Bitmap? = null
     var selectedImage: Bitmap? = null
+    var editedImage: Bitmap? = null
     var encryptedImage: Bitmap? = null
     //var decryptedImage: Bitmap? = null
 
     var encryptedBytes: ByteArray? = null
     var decryptedBytes: ByteArray? = null
+    var imageBytes: ByteArray? = null
 
     var isEncrypted: Boolean = false
 
@@ -81,8 +82,16 @@ class MainActivity : AppCompatActivity() {
             encriptar()
         }
 
+        findViewById<Button>(R.id.btnEditImage).setOnClickListener {
+            modificar()
+        }
+
         findViewById<Button>(R.id.btnDecryptImage).setOnClickListener {
             desencriptar()
+        }
+
+        findViewById<Button>(R.id.btnInfo).setOnClickListener {
+            mostrarIntegrantes()
         }
 
         // Pruebas para cargar imagenes
@@ -110,6 +119,18 @@ class MainActivity : AppCompatActivity() {
             val exifData = data.data!!
             val ins: InputStream? = contentResolver?.openInputStream(exifData)
             val img: Bitmap? = BitmapFactory.decodeStream(ins)
+
+            /*ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bm.compress(Bitmap.CompressFormat.PNG, 100, baos); //bm is the bitmap object
+            byte[] b = baos.toByteArray();
+            //String encodedImage = Base64.encode(b, Base64.DEFAULT);
+            encodedImage = Base64.encodeBytes(b);*/
+
+            val baos = ByteArrayOutputStream()
+            img!!.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val b = baos.toByteArray()
+            imageBytes = b
+            //val encodedImage = Base64.getEncoder().encode(b)
 
             if (img != null) {
                 //(findViewById<ImageView>(R.id.ivGallery)).setImageBitmap(pictureTurn(img, exifData))
@@ -177,7 +198,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         selectedImage = image
-        originalImage = image.copy(Bitmap.Config.RGB_565, false)
+        originalImage = image.copy(Bitmap.Config.ARGB_8888, false)
 
         return image
     }
@@ -221,10 +242,15 @@ class MainActivity : AppCompatActivity() {
         val bmp = selectedImage
 
         // Guardamos el bitmap como byte array en un archivo, para luego obtener los bytes con el ImageLoader
-        val bytes = bmp!!.byteCount
+       /* val bytes = bmp!!.byteCount
         val buff = ByteBuffer.allocate(bytes)
         bmp!!.copyPixelsToBuffer(buff)
-        val byteArray = buff.array()
+        val byteArray = buff.array()*/
+
+        // TEST: No agarro los bytes del Bitmap sino que los tengo guardados de cuando seleccione la imagen de la galeria.
+        val byteArray = imageBytes
+
+        /*
         val path = Environment.getExternalStorageDirectory().toString()
         val file = File(path, "encrypted_image_bytes.bmp")
         val filePath = file.path
@@ -237,6 +263,7 @@ class MainActivity : AppCompatActivity() {
         } catch (e: IOException) {
             Log.d("","ERROR: ALGO FALLO AL GRABAR LA IMAGEN ENCRIPTADA.")
         }
+        */
 
         // Generamos la imagen para encriptar
         val imageLoader = ImageLoader()
@@ -253,19 +280,33 @@ class MainActivity : AppCompatActivity() {
         val bitmapSize = selectedImage!!.byteCount
         val bufferCapacity = buffer.capacity()
 
+        encryptedImage = Bitmap.createBitmap(
+                bmp!!.width / 4,
+                bmp!!.height / 4,
+                Bitmap.Config.ARGB_8888
+        )
+
+        val bitmapSize2 = encryptedImage!!.byteCount
+        val bufferCapacity2 = buffer.capacity()
+
         try {
-            selectedImage!!.copyPixelsFromBuffer(buffer)
+
+            encryptedImage!!.copyPixelsFromBuffer(buffer)
+            //selectedImage!!.copyPixelsFromBuffer(buffer)
 
             // Seteamos la imagen encriptada
-            (findViewById<ImageView>(R.id.ivGallery)).setImageBitmap(selectedImage)
+            //(findViewById<ImageView>(R.id.ivGallery)).setImageBitmap(selectedImage)
+
+            // TEST
+            (findViewById<ImageView>(R.id.ivGallery)).setImageBitmap(encryptedImage)
 
             // Bonus: Guardamos la imagen encriptada en la galeria
-            MediaStore.Images.Media.insertImage(
-                    contentResolver,
-                    selectedImage,
-                    "imagen_encriptada",
-                    "Imagen encriptada con Trivium"
-            )
+//            MediaStore.Images.Media.insertImage(
+//                    contentResolver,
+//                    encryptedImage,
+//                    "imagen_encriptada",
+//                    "Imagen encriptada con Trivium"
+//            )
 
             Toast.makeText(applicationContext, "Imagen encriptada!", Toast.LENGTH_LONG).show()
         } catch (e: OutOfMemoryError) {
@@ -273,14 +314,44 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // Modificar la imagen encriptada.
+    fun modificar() {
+
+        val editImage = encryptedImage!!.copy(Bitmap.Config.ARGB_8888, true)
+
+        val canvas = Canvas(editImage)
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        paint.color = Color.rgb(61,61,255)
+        paint.textSize = 100.toFloat()
+        paint.setShadowLayer(1f,0f,1f,Color.BLACK)
+
+        val bounds = Rect()
+        val text = "CRIPTO"
+        paint.getTextBounds(text, 0, text.length, bounds)
+        val x = (encryptedImage!!.width - bounds.width()) / 2
+        val y = (encryptedImage!!.height - bounds.height()) / 2
+        canvas.drawText(text, x.toFloat(), y.toFloat(), paint)
+
+        editedImage = editImage
+
+        (findViewById<ImageView>(R.id.ivGallery)).setImageBitmap(editImage)
+    }
+
     // Desencriptacion de la imagen seleccionada.
     fun desencriptar() {
 
+        val bmp = editedImage
+
+        val bytes = bmp!!.byteCount
+        val buff = ByteBuffer.allocate(bytes)
+        bmp!!.copyPixelsToBuffer(buff)
+        val byteArray = buff.array()
+
         // Generamos la imagen para desencriptar
         val imageLoader = ImageLoader()
-        val bytesHeader = imageLoader.getBytesHeader(encryptedBytes)
-        val bytesBody = imageLoader.getBytesBody(encryptedBytes)
-        val image = Image(encryptedBytes, bytesHeader, bytesBody)
+        val bytesHeader = imageLoader.getBytesHeader(byteArray)
+        val bytesBody = imageLoader.getBytesBody(byteArray)
+        val image = Image(byteArray, bytesHeader, bytesBody)
 
         // Obtenemos la imagen desencriptada en forma de bytes
         val decryptedBytes = triviumImageEncrypter!!.decrypt(image)
@@ -301,6 +372,12 @@ class MainActivity : AppCompatActivity() {
         } catch (e: OutOfMemoryError) {
             Toast.makeText(applicationContext, "Error!" + e.message, Toast.LENGTH_LONG).show()
         }
+    }
+
+    fun mostrarIntegrantes() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Roldan - Reskin - Ciccone - Ron")
+        builder.show()
     }
 
     fun encrypt() {
@@ -426,7 +503,7 @@ class MainActivity : AppCompatActivity() {
         // OPCION 1: Convertimos los bytes en imagen
         val width = selectedImage!!.width * 1.4
         val height = selectedImage!!.height * 1.4
-        encryptedImage = Bitmap.createBitmap(width.toInt(), height.toInt(), Bitmap.Config.RGB_565)
+        encryptedImage = Bitmap.createBitmap(width.toInt(), height.toInt(), Bitmap.Config.ARGB_8888)
         //encryptedImage = Bitmap.createBitmap(width, height, Bitmap.Config.ALPHA_8)
         //encryptedImage = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_4444)
         //encryptedImage = Bitmap.createBitmap(width, height, Bitmap.Config.HARDWARE) (API 26)

@@ -1,51 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:digits="0123456789"
-        android:inputType="number"
-        android:text="1160398827"
-        android:hint="Ingrese la clave de 10 digitos"
-        android:maxLength="10"
-        />
+        android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/ivGallery"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:contentDescription="TODO" />
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:digits="0123456789"
+            android:hint="Ingrese la clave de 10 digitos"
+            android:inputType="number"
+            android:maxLength="10"
+            android:text="1160398827" />
 
-    <Button
-        android:id="@+id/btnPickImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:text="Elegir imagen"
-        android:layout_gravity="center" />
+        <Button
+            android:id="@+id/btnInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="GRUPO" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/btnEncryptImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:text="Encriptar imagen"
-        android:layout_gravity="center"
-        android:visibility="visible" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnDecryptImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:text="Desencriptar imagen"
-        android:layout_gravity="center"
-        android:visibility="visible" />
+        <ImageView
+            android:id="@+id/ivGallery"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="50"
+            android:contentDescription="TODO" />
+
+        <Button
+            android:id="@+id/btnPickImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="Elegir imagen" />
+
+        <Button
+            android:id="@+id/btnEncryptImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="Encriptar imagen"
+            android:visibility="visible" />
+
+        <Button
+            android:id="@+id/btnEditImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="Modificar imagen"
+            android:visibility="visible" />
+
+        <Button
+            android:id="@+id/btnDecryptImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="Desencriptar imagen"
+            android:visibility="visible" />
+    </LinearLayout>
 
 </LinearLayout>
