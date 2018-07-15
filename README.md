@@ -47,3 +47,10 @@ Por lo cual el primer output es 1. Ahora todo debe moverse así que veamos: El i
 - https://www.youtube.com/watch?v=imZwZa8oIxs
 - https://www.youtube.com/watch?v=XRWbS1CJY-0
 - https://www.youtube.com/watch?v=YRm2hrPVUgw
+
+## Integrantes
+
+- Nahuel José Roldán (nahu.jose.roldan1990@gmail.com)
+- Joel Ciccone (joelsciccone@gmail.com)
+- Lucas Ron (ronlucas86@gmail.com)
+- Alan Reskin (alanreskin7@gmail.com)
